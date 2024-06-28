@@ -1,4 +1,4 @@
-import { View, Text, FlatList, TouchableOpacity, Linking, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Linking, StyleSheet, Alert, Share } from 'react-native';
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -30,9 +30,40 @@ export default function ActionButton({ business }) {
         }
     ];
 
-    const handlePress = (url) => {
-        if (url) {
-            Linking.openURL(url);
+    const handlePress = (item) => {
+        if (item.name === 'Share') {
+            handleShare();
+        } else if (item.url) {
+            Linking.canOpenURL(item.url)
+                .then((supported) => {
+                    if (supported) {
+                        Linking.openURL(item.url);
+                    } else {
+                        Alert.alert('Error', 'Cannot open this URL: ' + item.url);
+                    }
+                })
+                .catch((err) => Alert.alert('Error', err.message));
+        } else {
+            Alert.alert('Error', 'No URL provided');
+        }
+    };
+
+    const handleShare = async () => {
+        try {
+            const result = await Share.share({
+                message: `Check out this business: ${business?.name}\nContact: ${business?.contact}\nAddress: ${business?.address}\nWebsite: ${business?.website}`
+            });
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    // Shared with activity type of result.activityType
+                } else {
+                    // Shared
+                }
+            } else if (result.action === Share.dismissedAction) {
+                // Dismissed
+            }
+        } catch (error) {
+            Alert.alert('Error', error.message);
         }
     };
 
@@ -45,7 +76,8 @@ export default function ActionButton({ business }) {
                 renderItem={({ item }) => (
                     <TouchableOpacity 
                         style={styles.button}
-                        onPress={() => handlePress(item.url)}
+                        onPress={() => handlePress(item)}
+                        accessibilityLabel={item.name}
                     >
                         <View style={styles.iconContainer}>
                             <Ionicons name={item.icon} size={24} color="#AA0A27" />

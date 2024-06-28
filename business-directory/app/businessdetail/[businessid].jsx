@@ -7,6 +7,7 @@ import { Colors } from '../../constants/Colors';
 import Intro from '../../components/BusinessDetail/Intro';
 import ActionButton from '../../components/BusinessDetail/ActionButton';
 import About from '../../components/BusinessDetail/About';
+import Reviews from '../../components/BusinessDetail/Reviews';
 
 export default function BusinessDetail() {
 
@@ -25,7 +26,7 @@ export default function BusinessDetail() {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            setBusiness(docSnap.data());
+            setBusiness({id:docSnap.id,...docSnap.data()});
             setLoading(false);
         } else {
             console.log("No such document!");
@@ -51,6 +52,8 @@ export default function BusinessDetail() {
             <ActionButton business={business}/>
         {/* About Section */}
             <About business={business}/>
+        {/* Review Section */}
+            <Reviews business={business}/>
       </View>
     }
     </ScrollView>
