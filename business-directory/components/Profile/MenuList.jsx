@@ -17,7 +17,7 @@ export default function MenuList() {
             id: 2,
             name: 'My Business',
             icon: <Ionicons name="business-outline" size={24} color="#007bff" />,
-            path: ''
+            path: '/business/my-business'
         },
         {
             id: 3,
