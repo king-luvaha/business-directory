@@ -45,7 +45,7 @@ export default function Intro({business}) {
             <TouchableOpacity onPress={()=>router.back()}>
                 <Ionicons name="arrow-back-circle" size={40} color="#F5E5E9" />
             </TouchableOpacity>
-            <Ionicons name="heart-outline" size={40} color="#F5E5E9" />
+            
         </View>
       <Image source={{uri:business?.imageUrl}}
         style={{
