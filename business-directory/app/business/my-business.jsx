@@ -45,11 +45,6 @@ export default function MyBusiness() {
     <View style={{
         padding:20
     }}>
-      <Text style={{
-        fontFamily:'outfit-bold',
-        fontSize:30
-      }}>My Business</Text>
-
       <FlatList
         data={businessList}
         onRefresh={GetUserBusiness}

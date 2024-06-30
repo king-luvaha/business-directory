@@ -29,18 +29,24 @@ export default function Reviews({ business }) {
 
     return (
         <View style={{ padding: 20, backgroundColor: '#FFF' }}>
-            <Text style={{ fontFamily: 'outfit-bold', fontSize: 20 }}>Reviews</Text>
+            
+            <Text style={{ fontFamily: 'outfit-bold', fontSize: 20 }}>Rate this business</Text>
+            <Text style={{ fontFamily: 'outfit', fontSize: 12, color:Colors.GRAY }}>Tell others what you think.</Text>
 
             <View>
                 <Rating
                     showRating={false}
-                    imageSize={20}
+                    imageSize={25}
                     onFinishRating={setRating}
-                    style={{ paddingVertical: 10 }}
+                    style={{
+                        marginTop:20,
+                        marginBottom:30,
+                        marginLeft:-200,
+                    }}
                 />
 
                 <TextInput
-                    placeholder='Write your comment'
+                    placeholder='Write your review'
                     numberOfLines={4}
                     value={userInput}
                     onChangeText={setUserInput}
@@ -64,9 +70,13 @@ export default function Reviews({ business }) {
                 >
                     <Text style={{ fontFamily: 'outfit', color: '#FFF', textAlign: 'center' }}>Submit</Text>
                 </TouchableOpacity>
+
+                
             </View>
 
+
             {/* Display Previous Reviews */}
+            <Text style={{ fontFamily: 'outfit-bold', fontSize: 20, marginTop:40 }}>Ratings & Reviews</Text>
 
             <FlatList
                 data={business?.reviews}

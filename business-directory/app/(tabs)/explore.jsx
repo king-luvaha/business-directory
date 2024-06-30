@@ -29,6 +29,7 @@ const GetBusinessBCategory = async(category) => {
         fontFamily:'outfit-bold',
         fontSize:30
       }}>Explore More</Text>
+      
       {/* SearchBar */}
       <View style={{
         display:'flex',
@@ -37,8 +38,8 @@ const GetBusinessBCategory = async(category) => {
         alignItems:'center',
         backgroundColor:'#FFF',
         padding:10,
-        marginVertical:10,
-        marginTop:15,
+        marginVertical:20,
+        marginTop:5,
         borderRadius:8,
         borderWidth:1,
         borderColor:Colors.PRIMARY
@@ -52,10 +53,12 @@ const GetBusinessBCategory = async(category) => {
         />
       </View>
       {/* Category */}
+      <View style={{ marginLeft:-15, marginBottom:15 }}>
         <Category
           explore={true}
           onCategorySelect={(category)=>GetBusinessBCategory(category)}
         />
+      </View>
       {/* Business List */}
         <ExploreBusinessList businessList={businessList}/>
     </View>

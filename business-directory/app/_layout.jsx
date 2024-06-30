@@ -3,6 +3,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import LoginScreen from '../components/LoginScreen';
 import * as SecureStore from 'expo-secure-store';
+import { View, ActivityIndicator } from 'react-native';
 
 const tokenCache = {
   async getToken(key) {
@@ -24,17 +25,27 @@ const tokenCache = {
     try {
       return SecureStore.setItemAsync(key, value);
     } catch (err) {
+      console.error("SecureStore save item error: ", err);
       return;
     }
   },
 };
 
 export default function RootLayout() {
-  useFonts({
-    'outfit':require('./../assets/fonts/Outfit-Regular.ttf'),
-    'outfit-medium':require('./../assets/fonts/Outfit-Medium.ttf'),
-    'outfit-bold':require('./../assets/fonts/Outfit-Bold.ttf')
-  })
+  const [fontsLoaded] = useFonts({
+    'outfit': require('./../assets/fonts/Outfit-Regular.ttf'),
+    'outfit-medium': require('./../assets/fonts/Outfit-Medium.ttf'),
+    'outfit-bold': require('./../assets/fonts/Outfit-Bold.ttf')
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY}>
       <SignedIn>

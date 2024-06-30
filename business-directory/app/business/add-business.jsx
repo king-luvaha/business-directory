@@ -8,7 +8,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { collection, doc, getDocs, query, setDoc } from 'firebase/firestore';
 import { db, storage } from './../../configs/FirebaseConfig';
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import {useUser} from '@clerk/clerk-expo'
+import { useUser } from '@clerk/clerk-expo'
 
 export default function AddBusiness() {
 
@@ -30,30 +30,30 @@ export default function AddBusiness() {
             headerShown:true,
         })
         GetCategoryList();
-    },[])
+    },[]);
 
     const onImagePick = async() => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             quality: 1,
-          });
-          setImage(result?.assets[0].uri);
-          console.log(result);
+        });
+        if (!result.cancelled) {
+            setImage(result.assets[0].uri);
+        }
     }
 
     const GetCategoryList = async() => {
-        setCategoryList([])
+        setCategoryList([]);
         const q = query(collection(db,'Category'));
         const snapShot = await getDocs(q);
 
         snapShot.forEach((doc)=>{
-            console.log(doc.data());
             setCategoryList(prev=>[...prev,{
                 label:(doc.data()).name,
                 value:(doc.data()).name
-            }])
-        })
+            }]);
+        });
     }
 
     const onAddNewBusiness = async() => {
@@ -69,10 +69,22 @@ export default function AddBusiness() {
         }).then(resp=>{
             getDownloadURL(imageRef).then(async(downloadUrl)=>{
                 console.log(downloadUrl);
-                saveBusinessDetail(downloadUrl)
-            })
-        })
-        setLoading(false);
+                await saveBusinessDetail(downloadUrl);
+                // Reset state after successful submission
+                setName('');
+                setAddress('');
+                setContact('');
+                setWebsite('');
+                setAbout('');
+                setCategory('');
+                setImage(null);
+                setLoading(false);
+                ToastAndroid.show('New Business Added',ToastAndroid.LONG)
+            });
+        }).catch(error => {
+            console.error("Error uploading image: ", error);
+            setLoading(false);
+        });
     }
 
     const saveBusinessDetail = async(imageUrl)=>{
@@ -87,155 +99,153 @@ export default function AddBusiness() {
             userEmail:user?.primaryEmailAddress?.emailAddress,
             userImage:user?.imageUrl,
             imageUrl:imageUrl
-        })
-        setLoading(false);
-        ToastAndroid.show('New Business Added',ToastAndroid.LONG)
+        });
     }
 
   return (
     <ScrollView>
-    <View style={{
-        padding:20
-    }}>
-      <Text style={{
-        fontFamily:'outfit-bold',
-        fontSize:25
-      }}>Add Business</Text>
-      <Text style={{
-        fontFamily:'outfit',
-        color:Colors.GRAY
-      }}>Fill all the details in order to Add A New Business</Text>
-
-      <TouchableOpacity style={{
-        width:100,
-        height:100,
-        marginTop:20,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth:1,
-        borderRadius:10,
-        borderColor:'#AA0A27'
-      }}
-      onPress={()=>onImagePick()}
-      >
-        {!image ? (
-                    <FontAwesome name="camera-retro" size={50} color="#AA0A27" />
-                ) : (
-                    <Image
-                        source={{ uri: image }}
-                        style={{ width: 100, height: 100, borderRadius:10 }}
-                    />
-                )}
-      </TouchableOpacity>
-
-      <View>
-        <TextInput placeholder='Name'
-        onChangeText={(v)=>setName(v)}
-            style={{
-                padding:10,
-                borderWidth:1,
-                borderRadius:5,
-                fontSize:17,
-                backgroundColor:'#FFF',
-                marginTop:10,
-                borderColor:Colors.PRIMARY,
-                fontFamily:'outfit'
-            }}
-        />
-
-        <TextInput placeholder='Address'
-        onChangeText={(v)=>setAddress(v)}
-            style={{
-                padding:10,
-                borderWidth:1,
-                borderRadius:5,
-                fontSize:17,
-                backgroundColor:'#FFF',
-                marginTop:10,
-                borderColor:Colors.PRIMARY,
-                fontFamily:'outfit'
-            }}
-        />
-
-        <TextInput placeholder='Contact'
-        onChangeText={(v)=>setContact(v)}
-            style={{
-                padding:10,
-                borderWidth:1,
-                borderRadius:5,
-                fontSize:17,
-                backgroundColor:'#FFF',
-                marginTop:10,
-                borderColor:Colors.PRIMARY,
-                fontFamily:'outfit'
-            }}
-        />
-
-        <TextInput placeholder='Website'
-        onChangeText={(v)=>setWebsite(v)}
-            style={{
-                padding:10,
-                borderWidth:1,
-                borderRadius:5,
-                fontSize:17,
-                backgroundColor:'#FFF',
-                marginTop:10,
-                borderColor:Colors.PRIMARY,
-                fontFamily:'outfit'
-            }}
-        />
-
-        <TextInput placeholder='About'
-        onChangeText={(v)=>setAbout(v)}
-        multiline
-        numberOfLines={5}
-            style={{
-                padding:10,
-                borderWidth:1,
-                borderRadius:5,
-                fontSize:17,
-                backgroundColor:'#FFF',
-                marginTop:10,
-                borderColor:Colors.PRIMARY,
-                fontFamily:'outfit',
-                height:100
-            }}
-        />
-
         <View style={{
-            borderWidth:1,
-            borderRadius:5,
-            fontSize:17,
-            backgroundColor:'#FFF',
-            marginTop:10,
-            borderColor:Colors.PRIMARY,
+            padding:20
         }}>
-            <RNPickerSelect
-            onValueChange={(value) => setCategory(value)}
-            items={categoryList}
-            />
-        </View>
-      </View>
-
-      <TouchableOpacity 
-      disabled={loading}
-      style={{
-        padding:15,
-        backgroundColor:Colors.PRIMARY,
-        borderRadius:5,
-        marginTop:20
-      }}
-      onPress={()=>onAddNewBusiness()}
-      >
-        {loading ? 
-        <ActivityIndicator size={'large'} color={'#FFF'}/> :
-        <Text style={{
-            textAlign:'center',
+            <Text style={{
+            fontFamily:'outfit-bold',
+            fontSize:25
+            }}>Add Business</Text>
+            <Text style={{
             fontFamily:'outfit',
-            color:'#FFF'
-        }}>Add New Business</Text>}
-      </TouchableOpacity>
-    </View>
+            color:Colors.GRAY
+            }}>Fill all the details in order to Add A New Business</Text>
+
+            <TouchableOpacity style={{
+            width:100,
+            height:100,
+            marginTop:20,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderWidth:1,
+            borderRadius:10,
+            borderColor:'#AA0A27'
+            }}
+            onPress={()=>onImagePick()}
+            >
+                {!image ? (
+                        <FontAwesome name="camera-retro" size={50} color="#AA0A27" />
+                    ) : (
+                        <Image
+                            source={{ uri: image }}
+                            style={{ width: 100, height: 100, borderRadius:10 }}
+                        />
+                    )}
+            </TouchableOpacity>
+
+            <View>
+                <TextInput placeholder='Name'
+                onChangeText={(v)=>setName(v)}
+                    style={{
+                        padding:10,
+                        borderWidth:1,
+                        borderRadius:5,
+                        fontSize:17,
+                        backgroundColor:'#FFF',
+                        marginTop:10,
+                        borderColor:Colors.PRIMARY,
+                        fontFamily:'outfit'
+                    }}
+                />
+
+                <TextInput placeholder='Address'
+                onChangeText={(v)=>setAddress(v)}
+                    style={{
+                        padding:10,
+                        borderWidth:1,
+                        borderRadius:5,
+                        fontSize:17,
+                        backgroundColor:'#FFF',
+                        marginTop:10,
+                        borderColor:Colors.PRIMARY,
+                        fontFamily:'outfit'
+                    }}
+                />
+
+                <TextInput placeholder='Contact'
+                onChangeText={(v)=>setContact(v)}
+                    style={{
+                        padding:10,
+                        borderWidth:1,
+                        borderRadius:5,
+                        fontSize:17,
+                        backgroundColor:'#FFF',
+                        marginTop:10,
+                        borderColor:Colors.PRIMARY,
+                        fontFamily:'outfit'
+                    }}
+                />
+
+                <TextInput placeholder='Website'
+                onChangeText={(v)=>setWebsite(v)}
+                    style={{
+                        padding:10,
+                        borderWidth:1,
+                        borderRadius:5,
+                        fontSize:17,
+                        backgroundColor:'#FFF',
+                        marginTop:10,
+                        borderColor:Colors.PRIMARY,
+                        fontFamily:'outfit'
+                    }}
+                />
+
+                <TextInput placeholder='About'
+                onChangeText={(v)=>setAbout(v)}
+                multiline
+                numberOfLines={5}
+                    style={{
+                        padding:10,
+                        borderWidth:1,
+                        borderRadius:5,
+                        fontSize:17,
+                        backgroundColor:'#FFF',
+                        marginTop:10,
+                        borderColor:Colors.PRIMARY,
+                        fontFamily:'outfit',
+                        height:100
+                    }}
+                />
+
+                <View style={{
+                    borderWidth:1,
+                    borderRadius:5,
+                    fontSize:17,
+                    backgroundColor:'#FFF',
+                    marginTop:10,
+                    borderColor:Colors.PRIMARY,
+                }}>
+                    <RNPickerSelect
+                    onValueChange={(value) => setCategory(value)}
+                    items={categoryList}
+                    />
+                </View>
+            </View>
+
+            <TouchableOpacity 
+                disabled={loading}
+                style={{
+                padding:15,
+                backgroundColor:Colors.PRIMARY,
+                borderRadius:5,
+                marginTop:20
+                }}
+                onPress={()=>onAddNewBusiness()}
+            >
+            {loading ? 
+            <ActivityIndicator size={'large'} color={'#FFF'}/> :
+            <Text style={{
+                textAlign:'center',
+                fontFamily:'outfit',
+                color:'#FFF'
+            }}>Add New Business</Text>}
+            </TouchableOpacity>
+        </View>
     </ScrollView>
   )
 }

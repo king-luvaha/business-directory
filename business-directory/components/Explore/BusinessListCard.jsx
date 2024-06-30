@@ -14,6 +14,8 @@ export default function BusinessListCard({business}) {
         backgroundColor:'#FFF',
         borderBottomLeftRadius:10,
         borderBottomRightRadius:10,
+        borderTopLeftRadius:10,
+        borderTopRightRadius:10,
         marginTop:15
     }}>
       <Image source={{uri:business?.imageUrl}}

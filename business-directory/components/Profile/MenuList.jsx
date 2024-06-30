@@ -1,10 +1,13 @@
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Share } from 'react-native';
 import React from 'react';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { Colors } from './../../constants/Colors';
 import { useRouter } from 'expo-router'
+import { useAuth } from '@clerk/clerk-expo'
 
 export default function MenuList() {
+
+    const { signOut } = useAuth();
 
     const menuList = [
         {
@@ -23,19 +26,31 @@ export default function MenuList() {
             id: 3,
             name: 'Share App',
             icon: <Ionicons name="share-social" size={24} color="#fd7e14" />,
-            path: ''
+            path: 'share'
         },
         {
             id: 4,
             name: 'Logout',
             icon: <MaterialIcons name="logout" size={24} color="#dc3545" />,
-            path: ''
+            path: 'logout'
         }
     ];
 
     const router = useRouter();
 
     const onMenuClick = (item) => {
+        if(item.path=='logout'){
+            signOut();
+            return;
+        }
+        if(item.path=='share'){
+            Share.share(
+                {
+                    message:'Jamii Business Directory App - https://expo.dev/artifacts/eas/evonrhHF9TTwJBJMYBQkX9.apk '
+                }
+            )
+            return;
+        }
         router.push(item.path)
     }
 
