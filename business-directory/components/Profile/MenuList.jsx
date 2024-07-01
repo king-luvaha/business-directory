@@ -46,7 +46,7 @@ export default function MenuList() {
         if(item.path=='share'){
             Share.share(
                 {
-                    message:'Jamii Business Directory App - https://expo.dev/artifacts/eas/evonrhHF9TTwJBJMYBQkX9.apk '
+                    message:'Jamii Business Directory App - https://expo.dev/artifacts/eas/eZ1PkWrygVjy8guits4VwH.apk '
                 }
             )
             return;
